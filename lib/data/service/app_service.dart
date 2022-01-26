@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:morphosis_flutter_demo/data/repository/firebase_manager.dart';
 import 'package:morphosis_flutter_demo/presentation/blocs/http.bloc.dart';
+import 'package:morphosis_flutter_demo/presentation/screens/home/search.bloc.dart';
 import 'package:morphosis_flutter_demo/presentation/screens/index/index.bloc.dart';
 import 'package:morphosis_flutter_demo/presentation/shared/widgets/error_widget.dart';
 
@@ -12,7 +13,7 @@ import '../../main.dart';
 /// [APPSERVICE] IS ENTRANCE OF THE APP
 /// IT IS SUPPOSED TO START THE APP WITH REQUIRED CREDENTIALS
 class AppService {
-  static HttpRequestBloc httpRequests;
+  static late HttpRequestBloc httpRequests;
 
   AppService._setInstance();
 
@@ -21,6 +22,7 @@ class AppService {
   startApp() {
     IndexBloc indexBloc = IndexBloc();
     httpRequests = HttpRequestBloc();
+    SearchBloc searchBloc = SearchBloc();
 
     // TO CATCH UP MY DEADLINE, I WILL SKIP AUTH SYSTEM.
     // IF I WAS SUPPOSED TO AUTH THE USER,
@@ -31,9 +33,14 @@ class AppService {
     runZonedGuarded(() {
       runApp(
         // REGISTER GLOBAL BLOCS HERE
-        MultiBlocProvider(providers: [
-          BlocProvider(create: (_) => indexBloc),
-        ], child: FirebaseApp()),
+        MultiBlocProvider(
+          providers: [
+            BlocProvider<IndexBloc>(create: (_) => indexBloc),
+            BlocProvider<HttpRequestBloc>(create: (_) => httpRequests),
+            BlocProvider<SearchBloc>(create: (_) => searchBloc),
+          ],
+          child: FirebaseApp(),
+        ),
       );
     }, (error, stackTrace) {
       print('runZonedGuarded: Caught error in my root zone.');
@@ -59,10 +66,10 @@ class _FirebaseAppState extends State<FirebaseApp> {
     debugPrint("firebase initialized");
 
     // Pass all uncaught errors to Crashlytics.
-    Function originalOnError = FlutterError.onError;
+    var originalOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails errorDetails) async {
       // Forward to original handler.
-      originalOnError(errorDetails);
+      originalOnError!(errorDetails);
     };
   }
 

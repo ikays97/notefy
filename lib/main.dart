@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morphosis_flutter_demo/data/service/app_service.dart';
-import 'package:morphosis_flutter_demo/presentation/screens/home/home.view.dart';
+import 'package:morphosis_flutter_demo/presentation/screens/index/index.view.dart';
 import 'package:morphosis_flutter_demo/presentation/shared/theming.dart';
 import 'presentation/shared/routes.dart';
 
@@ -27,7 +27,7 @@ class _AppState extends State<App> {
       title: title,
       theme: AppTheme.lightTheme(),
       onGenerateRoute: onGenerateRoutes,
-      initialRoute: HomePage.routeName,
+      initialRoute: IndexPage.routeName,
     );
   }
 }

@@ -5,7 +5,7 @@ class IndexState {
 
   IndexState({this.index = 0});
 
-  IndexState copyWith({int index}) {
+  IndexState copyWith({int? index}) {
     return IndexState(index: index ?? this.index);
   }
 }

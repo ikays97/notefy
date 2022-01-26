@@ -3,10 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:morphosis_flutter_demo/data/model/task.dart';
 
 class FirebaseManager {
-  static FirebaseManager _one;
+  static FirebaseManager? _one;
 
   static FirebaseManager get shared =>
-      (_one == null ? (_one = FirebaseManager._()) : _one);
+      (_one == null ? (_one = FirebaseManager._()) : _one!);
+
   FirebaseManager._();
 
   Future<void> initialise() => Firebase.initializeApp();
@@ -15,7 +16,7 @@ class FirebaseManager {
 
   //TODO: change collection name to something unique or your name
   CollectionReference get tasksRef =>
-      FirebaseFirestore.instance.collection('tasks');
+      FirebaseFirestore.instance.collection('atabek');
 
   //TODO: replace mock data. Remember to set the task id to the firebase object id
   List<Task> get tasks => mockData.map((t) => Task.fromJson(t)).toList();

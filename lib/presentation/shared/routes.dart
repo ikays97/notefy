@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:morphosis_flutter_demo/presentation/screens/home/home.view.dart';
+import 'package:morphosis_flutter_demo/presentation/screens/index/index.view.dart';
 
 Route<dynamic> onGenerateRoutes(RouteSettings settings) {
   switch (settings.name) {
-    case HomePage.routeName:
+    case IndexPage.routeName:
       return MaterialPageRoute(
         settings: RouteSettings(name: settings.name),
-        builder: (context) => HomePage(),
+        builder: (context) => IndexPage(),
       );
 
     /// default
     default:
       return MaterialPageRoute(
         settings: RouteSettings(name: settings.name),
-        builder: (context) => HomePage(),
+        builder: (context) => IndexPage(),
       );
   }
 }

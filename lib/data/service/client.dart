@@ -4,85 +4,87 @@ import 'dart:io';
 import 'dart:math';
 import 'package:http/io_client.dart';
 import 'package:http/http.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'app_service.dart';
 
 class ApiClient {
-  static Client http;
-  static Future refreshing;
+  static Client? http;
+  static Future? refreshing;
+
+  static interceptorClient() {
+    return InterceptedClient.build(
+      requestTimeout: const Duration(milliseconds: 15000),
+      interceptors: [],
+      client: IOClient(
+        HttpClient()..badCertificateCallback = (cert, host, port) => true,
+      ),
+    );
+  }
 
   // resets client connection
   static reset() {
     AppService.httpRequests.clear();
-    http.close();
-    http = IOClient(
-      HttpClient()..badCertificateCallback = (cert, host, port) => true,
-    );
+    http?.close();
+    http = interceptorClient();
   }
 
   // lazy-load client
   ApiClient._setInstance() {
-    http = http ??
-        IOClient(
-          HttpClient()..badCertificateCallback = (cert, host, port) => true,
-        );
+    http = http ?? interceptorClient();
   }
 
   static final ApiClient instance = ApiClient._setInstance();
 
   ///
-  /// [Headers, ApiResponse]
+  /// [Headers, Response]
   ///
 
-  Future<String> put(Uri uri,
-      {Map<String, dynamic> headers,
+  Future<dynamic> put(Uri uri,
+      {Map<String, dynamic>? headers,
       dynamic data,
       bool anonymous = false}) async {
     try {
-      headers['anonymous'] = '$anonymous';
       return await sendWithRetry(
-        ClientRequest(http, 'PUT', uri, data: data, headers: headers),
+        ClientRequest(http!, 'PUT', uri, data: data, headers: headers),
       );
     } catch (_) {
       throw _;
     }
   }
 
-  Future<String> post(Uri uri,
-      {Map<String, dynamic> headers,
+  Future<dynamic> post(Uri uri,
+      {Map<String, dynamic>? headers,
       dynamic data,
       bool anonymous = false}) async {
     try {
-      headers['anonymous'] = '$anonymous';
       return await sendWithRetry(
-        ClientRequest(http, 'POST', uri, data: data, headers: headers),
+        ClientRequest(http!, 'POST', uri, data: data, headers: headers),
       );
     } catch (_) {
       throw _;
     }
   }
 
-  Future<String> get(Uri uri,
+  Future<dynamic> get(Uri uri,
       {dynamic data,
-      Map<String, dynamic> headers,
+      Map<String, dynamic>? headers,
       bool anonymous = false}) async {
     try {
-      headers['anonymous'] = '$anonymous';
       return await sendWithRetry(
-        ClientRequest(http, 'GET', uri, headers: headers),
+        ClientRequest(http!, 'GET', uri, headers: headers),
       );
     } catch (_) {
       throw _;
     }
   }
 
-  Future<String> delete(Uri uri,
-      {Map<String, dynamic> headers,
+  Future<dynamic> delete(Uri uri,
+      {Map<String, dynamic>? headers,
       int apiVersion = 1,
       bool anonymous = false}) async {
     try {
-      headers['anonymous'] = '$anonymous';
       return await sendWithRetry(
-        ClientRequest(http, 'DELETE', uri, headers: headers),
+        ClientRequest(http!, 'DELETE', uri, headers: headers),
       );
     } catch (_) {
       throw _;
@@ -92,7 +94,7 @@ class ApiClient {
   ///
   /// [RETRY]
   ///
-  Future<String> sendWithRetry(ClientRequest req, {int maxRetries = 5}) async {
+  Future<dynamic> sendWithRetry(ClientRequest req, {int maxRetries = 5}) async {
     AppService.httpRequests.add(req.uri.path);
 
     DateTime start = DateTime.now();
@@ -105,7 +107,7 @@ class ApiClient {
 
         if (response.body != null) {
           AppService.httpRequests.remove(req.uri.path);
-          return jsonDecode(response.body);
+          return json.decode(response.body);
         } else {
           throw HttpException(
               '${response.statusCode} | ${response.reasonPhrase} | ${response.body}');
@@ -123,10 +125,12 @@ class ApiClient {
         AppService.httpRequests.remove(req.uri.path);
         throw ClientException("Client was reset");
       } catch (_) {
+        print(_.toString());
         print("👎👎👎👎👎👎");
       } finally {
         retries++;
-        await Future.delayed(Duration(milliseconds: 100 * pow(2, retries)));
+        await Future.delayed(
+            Duration(milliseconds: 100 * pow(2, retries).toInt()));
       }
     }
     print('request escaped');
@@ -139,7 +143,7 @@ class ClientRequest {
   final Client client;
   final String method;
   final Uri uri;
-  final Map<String, dynamic> headers;
+  final Map<String, dynamic>? headers;
   final dynamic data;
 
   ClientRequest(
@@ -153,15 +157,15 @@ class ClientRequest {
   Future<Response> send() async {
     switch (method) {
       case 'GET':
-        return await client.get(uri, headers: headers);
+        return await client.get(uri);
       case 'POST':
-        return await client.post(uri, headers: headers, body: data);
+        return await client.post(uri, body: data);
       case 'PUT':
-        return await client.put(uri, headers: headers, body: data);
+        return await client.put(uri, body: data);
       case 'DELETE':
-        return await client.delete(uri, headers: headers);
+        return await client.delete(uri);
       default:
-        return await client.get(uri, headers: headers);
+        return await client.get(uri);
     }
   }
 }

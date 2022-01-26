@@ -3,16 +3,16 @@ import 'package:morphosis_flutter_demo/data/model/task.dart';
 import 'package:morphosis_flutter_demo/presentation/screens/task_detail/task_detail.view.dart';
 
 class TasksPage extends StatelessWidget {
-  TasksPage({@required this.title, @required this.tasks});
+  TasksPage({required this.title, required this.tasks});
 
   final String title;
   final List<Task> tasks;
 
   void addTask(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => TaskPage()),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => TaskPage()),
+    // );
   }
 
   @override
@@ -73,7 +73,7 @@ class _Task extends StatelessWidget {
         onPressed: _toggleComplete,
       ),
       title: Text(task.title),
-      subtitle: Text(task.description),
+      subtitle: Text(task.description ?? ""),
       trailing: IconButton(
         icon: Icon(
           Icons.delete,

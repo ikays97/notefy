@@ -7,18 +7,20 @@ import '../home/home.view.dart';
 import '../tasks/tasks.view.dart';
 
 class IndexPage extends StatefulWidget {
+  static const routeName = "index-page";
+
   @override
   _IndexPageState createState() => _IndexPageState();
 }
 
 class _IndexPageState extends State<IndexPage> {
   int _currentIndex = 0;
-  IndexBloc indexBloc;
+  late IndexBloc indexBloc;
 
-  void onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+  @override
+  void initState() {
+    indexBloc = BlocProvider.of<IndexBloc>(context);
+    super.initState();
   }
 
   @override
@@ -36,14 +38,14 @@ class _IndexPageState extends State<IndexPage> {
       )
     ];
 
-    return BlocBuilder(
-      cubit: indexBloc,
+    return BlocBuilder<IndexBloc, IndexState>(
+      bloc: indexBloc,
       builder: (context, state) {
         return Scaffold(
-          body: children[_currentIndex],
+          body: children[state.index],
           bottomNavigationBar: BottomNavigationBar(
-            onTap: onTabTapped,
-            currentIndex: _currentIndex,
+            onTap: indexBloc.changeIndex,
+            currentIndex: state.index,
             items: [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),

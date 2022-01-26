@@ -4,7 +4,7 @@ import 'package:morphosis_flutter_demo/data/model/task.dart';
 import 'package:morphosis_flutter_demo/data/repository/firebase_manager.dart';
 
 class TaskPage extends StatelessWidget {
-  TaskPage({this.task});
+  TaskPage({required this.task});
 
   final Task task;
 
@@ -32,13 +32,13 @@ class __TaskFormState extends State<_TaskForm> {
 
   __TaskFormState(this.task);
 
-  Task task;
-  TextEditingController _titleController;
-  TextEditingController _descriptionController;
+  late Task task;
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
 
   void init() {
     if (task == null) {
-      task = Task();
+      task = Task(id: "1", title: "Cleaning");
       _titleController = TextEditingController();
       _descriptionController = TextEditingController();
     } else {
