@@ -3,16 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:http/io_client.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:team_time/Data/models/credentials.model.dart';
-import 'package:team_time/Data/models/error_log.dart';
-import 'package:team_time/Data/models/response.dart';
-import 'package:team_time/Data/services/app.service.dart';
-import 'package:team_time/Data/services/auth.service.dart';
-import 'package:team_time/Data/services/local_storage.service.dart';
-import 'package:http_interceptor/http_interceptor.dart';
 import 'package:http/http.dart';
-
 import 'app_service.dart';
 
 class ApiClient {
@@ -42,7 +33,7 @@ class ApiClient {
   /// [Headers, ApiResponse]
   ///
 
-  Future<ApiResponse> put(Uri uri,
+  Future<String> put(Uri uri,
       {Map<String, dynamic> headers,
       dynamic data,
       bool anonymous = false}) async {
@@ -56,7 +47,7 @@ class ApiClient {
     }
   }
 
-  Future<ApiResponse> post(Uri uri,
+  Future<String> post(Uri uri,
       {Map<String, dynamic> headers,
       dynamic data,
       bool anonymous = false}) async {
@@ -70,7 +61,7 @@ class ApiClient {
     }
   }
 
-  Future<ApiResponse> get(Uri uri,
+  Future<String> get(Uri uri,
       {dynamic data,
       Map<String, dynamic> headers,
       bool anonymous = false}) async {
@@ -84,7 +75,7 @@ class ApiClient {
     }
   }
 
-  Future<ApiResponse> delete(Uri uri,
+  Future<String> delete(Uri uri,
       {Map<String, dynamic> headers,
       int apiVersion = 1,
       bool anonymous = false}) async {
@@ -101,8 +92,7 @@ class ApiClient {
   ///
   /// [RETRY]
   ///
-  Future<ApiResponse> sendWithRetry(ClientRequest req,
-      {int maxRetries = 5}) async {
+  Future<String> sendWithRetry(ClientRequest req, {int maxRetries = 5}) async {
     AppService.httpRequests.add(req.uri.path);
 
     DateTime start = DateTime.now();
@@ -111,15 +101,12 @@ class ApiClient {
     while (DateTime.now().difference(start).abs() < Duration(seconds: 10) &&
         retries < maxRetries) {
       try {
-        print('send it');
         final response = await req.send();
 
-        var data = ApiResponse.fromJson(jsonDecode(response.body));
-        if (data != null && data.success) {
+        if (response.body != null) {
           AppService.httpRequests.remove(req.uri.path);
-          return data;
+          return jsonDecode(response.body);
         } else {
-          // logAttempt(response, retries);
           throw HttpException(
               '${response.statusCode} | ${response.reasonPhrase} | ${response.body}');
         }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morphosis_flutter_demo/data/model/task.dart';
-import 'package:morphosis_flutter_demo/presentation/screens/task.dart';
+import 'package:morphosis_flutter_demo/presentation/screens/task_detail/task_detail.view.dart';
 
 class TasksPage extends StatelessWidget {
   TasksPage({@required this.title, @required this.tasks});

@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:morphosis_flutter_demo/data/repository/firebase_manager.dart';
 import 'package:morphosis_flutter_demo/presentation/screens/index/index.bloc.dart';
 
-import '../home.dart';
-import '../tasks.dart';
+import '../home/home.view.dart';
+import '../tasks/tasks.view.dart';
 
 class IndexPage extends StatefulWidget {
   @override

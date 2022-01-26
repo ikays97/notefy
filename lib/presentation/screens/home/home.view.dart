@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
+  static const routeName = "home-page";
   const HomePage({Key key}) : super(key: key);
 
   @override
