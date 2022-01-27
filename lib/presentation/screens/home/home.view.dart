@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:morphosis_flutter_demo/data/model/post.dart';
 import 'package:morphosis_flutter_demo/presentation/shared/widgets/error_widget.dart';
+import 'package:morphosis_flutter_demo/presentation/shared/widgets/loader.dart';
 import 'search.bloc.dart';
 
 class HomePage extends StatefulWidget {
@@ -62,13 +63,7 @@ class _HomePageState extends State<HomePage> {
                 bloc: searchBloc,
                 builder: (context, state) {
                   if (state.status == SearchStatus.searching) {
-                    return Center(
-                      child: CircularProgressIndicator.adaptive(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 255, 191, 95),
-                        ),
-                      ),
-                    );
+                    return const Loader();
                   } else if (state.error != null) {
                     return ErrorMessage(
                       message: state.error!,

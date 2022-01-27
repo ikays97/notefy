@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:morphosis_flutter_demo/data/model/task.dart';
 import 'package:morphosis_flutter_demo/data/repository/firebase_manager.dart';
 import 'package:morphosis_flutter_demo/presentation/screens/index/index.bloc.dart';
 
@@ -20,6 +21,9 @@ class _IndexPageState extends State<IndexPage> {
   @override
   void initState() {
     indexBloc = BlocProvider.of<IndexBloc>(context);
+
+    FirebaseManager.shared.getTasks();
+
     super.initState();
   }
 
@@ -27,14 +31,10 @@ class _IndexPageState extends State<IndexPage> {
   Widget build(BuildContext context) {
     List<Widget> children = [
       HomePage(),
-      TasksPage(
-        title: 'All Tasks',
-        tasks: FirebaseManager.shared.tasks,
-      ),
+      TasksPage(title: 'All Tasks'),
       TasksPage(
         title: 'Completed Tasks',
-        tasks:
-            FirebaseManager.shared.tasks.where((t) => t.isCompleted).toList(),
+        isCompletedPage: true,
       )
     ];
 

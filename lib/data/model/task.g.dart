@@ -11,7 +11,7 @@ Task _$TaskFromJson(Map<String, dynamic> json) => Task(
       title: json['title'] as String,
       completedAt: json['completed_at'] == null
           ? null
-          : DateTime.parse(json['completed_at'] as String),
+          : DateTime.tryParse(json['completed_at'] as String),
       description: json['description'] as String?,
     );
 

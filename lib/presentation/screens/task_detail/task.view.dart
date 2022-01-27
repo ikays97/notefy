@@ -4,9 +4,9 @@ import 'package:morphosis_flutter_demo/data/model/task.dart';
 import 'package:morphosis_flutter_demo/data/repository/firebase_manager.dart';
 
 class TaskPage extends StatelessWidget {
-  TaskPage({required this.task});
+  TaskPage({this.task});
 
-  final Task task;
+  final Task? task;
 
   @override
   Widget build(BuildContext context) {
@@ -14,34 +14,34 @@ class TaskPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(task == null ? 'New Task' : 'Edit Task'),
       ),
-      body: _TaskForm(task),
+      body: _TaskForm(task: task),
     );
   }
 }
 
 class _TaskForm extends StatefulWidget {
-  _TaskForm(this.task);
+  _TaskForm({this.task});
 
-  final Task task;
+  final Task? task;
+
   @override
-  __TaskFormState createState() => __TaskFormState(task);
+  __TaskFormState createState() => __TaskFormState();
 }
 
 class __TaskFormState extends State<_TaskForm> {
   static const double _padding = 16;
-
-  __TaskFormState(this.task);
 
   late Task task;
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
 
   void init() {
-    if (task == null) {
-      task = Task(id: "1", title: "Cleaning");
+    if (widget.task == null) {
       _titleController = TextEditingController();
       _descriptionController = TextEditingController();
+      task = Task(title: "");
     } else {
+      task = widget.task!;
       _titleController = TextEditingController(text: task.title);
       _descriptionController = TextEditingController(text: task.description);
     }
@@ -53,11 +53,22 @@ class __TaskFormState extends State<_TaskForm> {
     super.initState();
   }
 
-  void _save(BuildContext context) {
-    //TODO implement save to firestore
+  void _add(BuildContext context) async {
+    if (await FirebaseManager.shared.addTask(task.copyWith(
+      description: _descriptionController.text,
+      title: _titleController.text,
+    ))) {
+      Navigator.of(context).pop();
+    }
+  }
 
-    FirebaseManager.shared.addTask(task);
-    Navigator.of(context).pop();
+  void _update(BuildContext context) async {
+    if (await FirebaseManager.shared.updateTask(task.copyWith(
+      description: _descriptionController.text,
+      title: _titleController.text,
+    ))) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -88,20 +99,19 @@ class __TaskFormState extends State<_TaskForm> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Completed ?'),
+                Text('Completed'),
                 CupertinoSwitch(
                   value: task.isCompleted,
                   onChanged: (_) {
-                    setState(() {
-                      task.toggleComplete();
-                    });
+                    task.toggleComplete();
+                    setState(() {});
                   },
                 ),
               ],
             ),
             Spacer(),
             ElevatedButton(
-              onPressed: () => _save(context),
+              onPressed: () => task.isNew ? _add(context) : _update(context),
               child: Container(
                 width: double.infinity,
                 child: Center(child: Text(task.isNew ? 'Create' : 'Update')),

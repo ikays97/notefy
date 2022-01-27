@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>951868577029-mjn0ejbu8937ioiric9uloask01b734k.apps.googleusercontent.com</string>
+	<string>527378949305-sujv4is1hhj3tbmhjj560336hutv4q1s.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.951868577029-mjn0ejbu8937ioiric9uloask01b734k</string>
+	<string>com.googleusercontent.apps.527378949305-sujv4is1hhj3tbmhjj560336hutv4q1s</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDJI3AUct5YMyROxK20iWFgq2aQOfd4LAU</string>
+	<string>AIzaSyCnbxSLDhDWD-AqrfrRfAk51SvYAFSHCBA</string>
 	<key>GCM_SENDER_ID</key>
-	<string>951868577029</string>
+	<string>527378949305</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.demo.morphosis</string>
 	<key>PROJECT_ID</key>
-	<string>todo-example-1a44a</string>
+	<string>notefy-1d262</string>
 	<key>STORAGE_BUCKET</key>
-	<string>todo-example-1a44a.appspot.com</string>
+	<string>notefy-1d262.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:951868577029:ios:a9a3c404f1129ece2f136c</string>
-	<key>DATABASE_URL</key>
-	<string>https://todo-example-1a44a-default-rtdb.firebaseio.com</string>
+	<string>1:527378949305:ios:d4c28f42a5b5a1b86be768</string>
 </dict>
 </plist>

@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:morphosis_flutter_demo/data/model/task.dart';
+import 'package:morphosis_flutter_demo/data/service/app_service.dart';
+import 'package:morphosis_flutter_demo/presentation/blocs/snackbar.bloc.dart';
 
 class FirebaseManager {
   static FirebaseManager? _one;
@@ -14,25 +16,48 @@ class FirebaseManager {
 
   FirebaseFirestore get firestore => FirebaseFirestore.instance;
 
-  //TODO: change collection name to something unique or your name
-  CollectionReference get tasksRef =>
+  CollectionReference<Map<String, dynamic>> get tasksRef =>
       FirebaseFirestore.instance.collection('atabek');
 
-  //TODO: replace mock data. Remember to set the task id to the firebase object id
-  List<Task> get tasks => mockData.map((t) => Task.fromJson(t)).toList();
+  addTask(Task task) async {
+    bool success = false;
+    await tasksRef.doc().set(task.toJson()).whenComplete(() {
+      success = true;
+      AppService.showSnackbar("Task added", SnackbarType.success);
+    }).catchError((e) {
+      AppService.showSnackbar("Error while task adding", SnackbarType.success);
+    });
 
-  //TODO: implement firestore CRUD functions here
-  void addTask(Task task) {
-    tasksRef.add(task.toJson());
+    return success;
+  }
+
+  Future<bool> updateTask(Task task) async {
+    bool success = false;
+    await tasksRef.doc(task.id).update(task.toJson()).whenComplete(() {
+      success = true;
+      AppService.showSnackbar("Task updated", SnackbarType.success);
+    }).catchError((e) {
+      AppService.showSnackbar(
+          "Error while task updating", SnackbarType.success);
+    });
+    return success;
+  }
+
+  Future<bool> deleteTask(String docId) async {
+    bool success = false;
+    await tasksRef.doc(docId).delete().whenComplete(() {
+      success = true;
+      AppService.showSnackbar("Task deleted", SnackbarType.success);
+    }).catchError((e) {
+      AppService.showSnackbar(
+          "Error while task deleting", SnackbarType.success);
+    });
+    return success;
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getTasks([completed = false]) {
+    return completed
+        ? this.tasksRef.where('completed_at', isNull: true).snapshots()
+        : this.tasksRef.snapshots();
   }
 }
-
-List<Map<String, dynamic>> mockData = [
-  {"id": "1", "title": "Task 1", "description": "Task 1 description"},
-  {
-    "id": "2",
-    "title": "Task 2",
-    "description": "Task 2 description",
-    "completed_at": DateTime.now().toIso8601String()
-  }
-];
