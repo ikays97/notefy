@@ -50,7 +50,7 @@ class TasksPage extends StatelessWidget {
                   var taskInfo = snapshot.data!.docs[index].data();
                   taskInfo['id'] = docId;
                   var taskModel = Task.fromJson(taskInfo);
-                  return _TaskTile(taskModel);
+                  return TaskTile(taskModel);
                 },
               );
             } else {
@@ -63,8 +63,8 @@ class TasksPage extends StatelessWidget {
   }
 }
 
-class _TaskTile extends StatelessWidget {
-  _TaskTile(this.task);
+class TaskTile extends StatelessWidget {
+  TaskTile(this.task);
 
   final Task task;
 

@@ -2,6 +2,9 @@ import 'package:morphosis_flutter_demo/data/model/post.dart';
 import 'package:morphosis_flutter_demo/data/service/client.dart';
 
 class SearchRepository {
+  /// IN THIS APP, WE ARE MAKING ONLY ONE NETWORK CALL,
+  /// SO I USED [BASEURL] IN THIS CLASS. IN PRODUCTION APP,
+  /// [BASEREPOSITORY] CLASS CAN BE CREATED.
   static String baseUrl = "jsonplaceholder.typicode.com";
 
   static Future<List<Post>> searchPosts(String query) async {
