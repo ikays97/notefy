@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:morphosis_flutter_demo/data/model/post.dart';
 import 'package:morphosis_flutter_demo/presentation/shared/widgets/error_widget.dart';
-
 import 'search.bloc.dart';
 
 class HomePage extends StatefulWidget {
@@ -57,19 +57,17 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             const SizedBox(height: 16),
-            if (searchBloc.state.queries.isNotEmpty)
-              Wrap(
-                children: searchBloc.state.queries
-                    .map((e) => Chip(label: Text(e)))
-                    .toList(),
-              ),
             Expanded(
               child: BlocBuilder<SearchBloc, SearchState>(
                 bloc: searchBloc,
                 builder: (context, state) {
                   if (state.status == SearchStatus.searching) {
                     return Center(
-                      child: CircularProgressIndicator.adaptive(),
+                      child: CircularProgressIndicator.adaptive(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color.fromARGB(255, 255, 191, 95),
+                        ),
+                      ),
                     );
                   } else if (state.error != null) {
                     return ErrorMessage(
@@ -84,32 +82,28 @@ class _HomePageState extends State<HomePage> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (state.queries.isNotEmpty)
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Recent searches"),
+                              Wrap(
+                                spacing: 8.0,
+                                children: searchBloc.state.queries
+                                    .map<Widget>((e) => buildChip(e))
+                                    .toList(),
+                              ),
+                            ],
+                          ),
+                        ),
                       Expanded(
                         child: ListView.builder(
                           itemCount: state.results.length,
                           itemBuilder: (context, index) {
                             var post = state.results[index];
-                            return InkWell(
-                              onTap: () {},
-                              child: ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                leading: CircleAvatar(
-                                  radius: 22,
-                                  backgroundColor: Colors.black12,
-                                  child: Center(
-                                    child: Text(
-                                      post.title.substring(0, 1).toUpperCase(),
-                                      style:
-                                          Theme.of(context).textTheme.headline4,
-                                    ),
-                                  ),
-                                ),
-                                title: Text(
-                                  post.title,
-                                  style: Theme.of(context).textTheme.bodyText1,
-                                ),
-                              ),
-                            );
+                            return buildPostTile(post, context);
                           },
                         ),
                       ),
@@ -120,6 +114,44 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  buildPostTile(Post post, BuildContext context) {
+    return InkWell(
+      onTap: () {},
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: CircleAvatar(
+          radius: 22,
+          backgroundColor: Colors.black12,
+          child: Center(
+            child: Text(
+              post.title.substring(0, 1).toUpperCase(),
+              style: Theme.of(context).textTheme.headline4,
+            ),
+          ),
+        ),
+        title: Text(
+          post.title,
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
+      ),
+    );
+  }
+
+  buildChip(String e) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _searchTextField.text = e;
+        });
+        searchBloc.searchPosts(e);
+      },
+      child: Chip(label: Text(e)),
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50.0),
       ),
     );
   }

@@ -37,14 +37,17 @@ class SearchState {
 }
 
 class SearchBloc extends Cubit<SearchState> {
-  SearchBloc() : super(SearchState(status: SearchStatus.idle));
+  SearchBloc() : super(SearchState(status: SearchStatus.idle)) {
+    readQueriesCache();
+  }
 
   //
   Future<void> searchPosts(String query) async {
-    await cacheSearchQuery(query);
+    cacheSearchQuery(query);
     emit(state.copyWith(status: SearchStatus.searching));
     try {
       var response = await SearchRepository.searchPosts(query);
+      readQueriesCache();
       emit(state.copyWith(results: response, status: SearchStatus.idle));
     } catch (_) {
       emit(state.copyWith(status: SearchStatus.error, error: _.toString()));
@@ -57,11 +60,13 @@ class SearchBloc extends Cubit<SearchState> {
     pastSearches.add(query);
     pastSearches =
         List.castFrom<dynamic, String>(pastSearches.toSet().toList());
-    emit(state.copyWith(queries: pastSearches));
     disk.cacheSearchQueries(jsonEncode(pastSearches));
   }
 
-  Future<List<String>> readQueriesCache() async {
-    return (await LocalStorage.instance).readSearchQueries();
+  readQueriesCache() async {
+    var pastSearches = (await LocalStorage.instance).readSearchQueries();
+    pastSearches =
+        List.castFrom<dynamic, String>(pastSearches.toSet().toList());
+    emit(state.copyWith(queries: pastSearches));
   }
 }
